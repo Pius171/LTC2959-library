@@ -16,7 +16,7 @@ void setup() {
   // Wire.setSDA(PB9);
   // Wire.setSCL(PB8);
   if (!batteryMonitor.begin()) {
-    Serial.println("LTC2959 not found. Check wiring and I2C address.");
+    Serial.println("LTC2959 not found. Check wiring.");
     while (1)
       ;  // Halt
   }
@@ -24,26 +24,41 @@ void setup() {
   Serial.println("LTC2959 initialized successfully!");
 
   // 🟢 Enable Coulomb Counter with LOW deadband (20uV)
-  bool counterEnabled = batteryMonitor.enableCounter(LTC2959::LOW_DEADBAND,false);
+  bool counterEnabled = batteryMonitor.enableCounter();
   if (counterEnabled) {
     Serial.println("Coulomb counter enabled successfully.");
   } else {
     Serial.println("Failed to enable Coulomb counter.");
   }
+  //batteryMonitor.disableCounter();
+  batteryMonitor.resetChargeCounter();
+
 }
 
 void loop() {
-  float voltage = batteryMonitor.readVoltage();
+ // batteryMonitor.OverwriteMinCurrent(-20.0);
+  float voltage     = batteryMonitor.readVoltage();
   float temperature = batteryMonitor.readTemperature();
-  float current = batteryMonitor.readCurrent();
-  float mAh = batteryMonitor.readCharge_mAh();
-  char buffer[120];
+  float current     = batteryMonitor.readCurrent();
+  float mAh         = batteryMonitor.readCharge_mAh();
+
+  float minVoltage  = batteryMonitor.readMinVoltage();
+  float maxVoltage  = batteryMonitor.readMaxVoltage();
+  float minCurrent  = batteryMonitor.readMinCurrent();
+  float maxCurrent  = batteryMonitor.readMaxCurrent();
+
+  char buffer[180];  // Extended for more data
 
   snprintf(buffer, sizeof(buffer),
-           "Voltage: %7.3f V | Temp: %6.2f °C | Current: %7.3f A | mAh: %13.6f mAh",
-           voltage, temperature, current, mAh);
+           "V: %7.3f V | Vmin: %7.3f V | Vmax: %7.3f V | "
+           "I: %7.3f A | Imin: %7.3f A | Imax: %7.3f A | "
+           "Temp: %6.2f °C | mAh: %13.6f",
+           voltage, minVoltage, maxVoltage,
+           current, minCurrent, maxCurrent,
+           temperature, mAh);
 
   Serial.println(buffer);
 
   delay(1000);
 }
+
