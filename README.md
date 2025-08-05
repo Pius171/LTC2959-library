@@ -1,6 +1,17 @@
 # LTC2959-library
 A library for communicating with the LTC2959 Ultra-Low Power Battery Gas Gauge
 
+Updated with code to tgake into account the dev board "MoJo" that has a sense resistor of 250 mOhm, instead of the 50 mOhm that is recomended in the datasheet of the LTC2959. 
+Because of this we need to do some additional maths when reading the mAh counter. 
+
+Rsense = 0.250 Ω:
+
+Forked from Pius Onyema Ndukwu
+https://github.com/Pius171/LTC2959-library
+
+📧 Email: [onyemandukwu@gmail.com](mailto:onyemandukwu@gmail.com)
+
+
 # LTC2959 Arduino Library
 
 ![Arduino](https://img.shields.io/badge/platform-arduino-blue.svg)
