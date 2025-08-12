@@ -82,10 +82,13 @@ bool LTC2959::disableCounter() {
   }
 }
 
+
+
 float LTC2959::readCharge_mAh() {
+const float qLSB_nAh = 533.0f * (50.0e-3f / _rSense); // ≈106.6 nAh   // 0.25f = 250 mOhm.
 uint32_t raw = readRegister32(0x03);
 int32_t delta = (int32_t)(raw - 0x80000000);  // Offset from mid-scale
-float mAh = delta * 0.000533;
+float mAh = delta * (qLSB_nAh / 1.0e6f);
 return mAh;
 }
 
@@ -131,8 +134,8 @@ void LTC2959::resetChargeCounter() {
   Wire.write(0x03);           // Start at register 0x03 (ACR MSB)
   //used the middle range of the counter 
   //0x00000000 (0) → 0xFFFFFFFF (4,294,967,295) is the full range
-  // if during reset, i reset to zero. When charging starts the current
-  // is negative so the variable will underflow; hence, we reset at the middle.
+  // if during reset, i reset to zero. When discharging starts 
+  // the variable will underflow. So we reset at the middle.
   Wire.write(0x80);  // <31:24>
   Wire.write(0x00);  // <23:16>
   Wire.write(0x00);  // <15:8>
